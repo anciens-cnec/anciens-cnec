@@ -25,6 +25,7 @@ function demarrer() {
   onAuthStateChanged(auth, async user => {
     if (!user) return ecran("login");
     if (!user.emailVerified) { msg("m-login", "Confirmez d'abord votre adresse depuis l'espace membres.", "erreur"); await signOut(auth); return; }
+    await user.getIdToken(true).catch(() => null);
     const adm = await getDoc(doc(db, "admins", cle(user.email))).catch(() => null);
     if (!adm || !adm.exists()) { msg("m-login", "Ce compte n'a pas les droits d'administration.", "erreur"); await signOut(auth); return; }
     ecran("admin");
