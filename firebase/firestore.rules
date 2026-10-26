@@ -1,0 +1,43 @@
+rules_version = '2';
+
+// Règles de sécurité de l'espace membres — à coller dans
+// Console Firebase → Firestore Database → Règles, puis « Publier ».
+service cloud.firestore {
+  match /databases/{base}/documents {
+
+    function connecte() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+    function moi() {
+      return request.auth.token.email.lower();
+    }
+    function confirme() {
+      return connecte() && request.auth.token.email_verified == true;
+    }
+    function estAdherent() {
+      return confirme() && exists(/databases/$(base)/documents/adherents/$(moi()));
+    }
+    function estAdmin() {
+      return confirme() && exists(/databases/$(base)/documents/admins/$(moi()));
+    }
+
+    // Liste des adhérents autorisés : identifiant = courriel en minuscules.
+    // Chacun ne peut lire que sa propre fiche ; seuls les administrateurs voient et modifient la liste.
+    match /adherents/{email} {
+      allow get: if connecte() && moi() == email;
+      allow read, write: if estAdmin();
+    }
+
+    // Administrateurs : créés à la main dans la console, jamais depuis le site.
+    match /admins/{email} {
+      allow get: if connecte() && moi() == email;
+      allow write: if false;
+    }
+
+    // Documents réservés : lisibles par les adhérents, gérés par les administrateurs.
+    match /documents/{id} {
+      allow read: if estAdherent() || estAdmin();
+      allow write: if estAdmin();
+    }
+  }
+}
