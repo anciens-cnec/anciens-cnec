@@ -112,16 +112,36 @@ function afficherVerification(user) {
 
 async function entrer(user) {
   ecran("chargement");
+  let fiche;
   try {
-    const fiche = await getDoc(doc(db, "adherents", cle(user.email)));
-    if (!fiche.exists()) { ecran("refuse"); return; }
-    const d = fiche.data() || {};
-    $("e-nom").textContent = d.nom ? d.nom : user.email;
-    await chargerDocuments();
-    ecran("espace");
+    /* Jeton rafraîchi : après la confirmation du courriel, l'ancien jeton
+       indique encore « adresse non confirmée » et les règles refuseraient l'accès. */
+    await user.getIdToken(true);
+    fiche = await getDoc(doc(db, "adherents", cle(user.email)));
   } catch (err) {
-    ecran("refuse");
+    console.error(err);
+    afficherErreur(err);
+    return;
   }
+  if (!fiche.exists()) { ecran("refuse"); return; }
+  const d = fiche.data() || {};
+  $("e-nom").textContent = d.nom ? d.nom : user.email;
+  try {
+    await chargerDocuments();
+  } catch (err) {
+    console.error(err);
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Les documents n'ont pas pu être chargés (" + (err.code || "erreur") + "). Rechargez la page.";
+    $("e-docs").textContent = "";
+    $("e-docs").appendChild(p);
+  }
+  ecran("espace");
+}
+
+function afficherErreur(err) {
+  ecran("accueil");
+  msg("m-accueil", "Connexion impossible pour le moment (" + (err.code || "erreur") + "). Rechargez la page ; si le problème continue, écrivez au secrétariat.", "erreur");
 }
 
 async function chargerDocuments() {
