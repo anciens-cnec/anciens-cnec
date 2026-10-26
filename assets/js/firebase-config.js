@@ -1,3 +1,5 @@
+/* Paramètres du projet Firebase de l'amicale (console Firebase → Paramètres du projet → Vos applications).
+   Ces valeurs ne sont pas secrètes : la sécurité repose sur les règles Firestore. */
 export const firebaseConfig = {
   apiKey: "AIzaSyCUIWu54BW57H-5mE_0zvlte21KaZQMTVo",
   authDomain: "amicale-cnec.firebaseapp.com",
