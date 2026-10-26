@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Espace membres — Anciens du Choc</title>
+<meta name="description" content="Espace réservé aux adhérents de l&#x27;amicale.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/img/01-insigne-de-l-amicale-des-anciens-du-1er-bataillo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header id="hdr">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" aria-label="Accueil">
+      <img class="logo" src="assets/img/01-insigne-de-l-amicale-des-anciens-du-1er-bataillo.png" alt="Insigne de l'amicale" width="42" height="38">
+      <span class="brand-txt">Anciens du 1<sup>er</sup> Bataillon de choc<small>et du C.N.E.C. — 1<sup>er</sup> Régiment de choc</small></span>
+    </a>
+
+    <nav class="pill" aria-label="Navigation principale">
+      <div class="dropdown">
+        <button type="button" data-menu="assoc" aria-haspopup="true" aria-expanded="false">L'association <i class="caret"></i></button>
+        <div class="menu" id="menu-assoc" hidden>
+          <a href="association.html">Présentation &amp; buts</a>
+          <a href="association.html#missions">Nos actions</a>
+          <a href="association.html#statuts">Statuts &amp; règlement</a>
+          <div class="sep"></div>
+          <a href="association.html#bureau">Le bureau</a>
+          <a href="association.html#delegations">Nos délégations régionales</a>
+        </div>
+      </div>
+      <a href="histoire.html">Histoire</a>
+      <a href="actualites.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="documents.html">Documents</a>
+      <a href="boutique.html">Boutique</a>
+    </nav>
+
+    <div class="right">
+      <a class="linkbtn" href="contact.html">Contact</a>
+      <a class="linkbtn" href="membres.html" aria-current="page">Espace membres</a>
+      <a class="btn" href="adhesion.html">Adhésion</a>
+    </div>
+
+    <button class="burger" id="burger" type="button" aria-expanded="false">Menu</button>
+  </div>
+
+  <div class="wrap" id="mobilenav">
+    <a href="association.html">L'association</a>
+    <a href="histoire.html">Histoire</a>
+    <a href="actualites.html">Actualités</a>
+    <a href="galerie.html">Galerie</a>
+    <a href="documents.html">Documents</a>
+    <a href="boutique.html">Boutique</a>
+    <a href="contact.html">Contact</a>
+    <a href="membres.html">Espace membres</a>
+    <a href="adhesion.html">Adhésion</a>
+  </div>
+</header>
+<main class="wrap">
+  <div class="pagehead">
+    <span class="mono">Accès réservé aux adhérents</span>
+    <h1>Espace membres</h1>
+    <p class="lede">Bulletins de liaison, procès-verbaux d'assemblée et documents du bureau, réservés aux adhérents à jour de cotisation.</p>
+  </div>
+
+  <!-- service pas encore configuré -->
+  <div data-ecran="bientot" class="panel login" hidden>
+    <p>L'espace membres est en cours de mise en service. En attendant, les documents réservés sont transmis sur demande par le secrétariat.</p>
+    <p style="margin-top:16px"><a class="btn" href="contact.html">Nous écrire</a></p>
+  </div>
+
+  <div data-ecran="chargement" class="panel login"><p>Chargement…</p></div>
+
+  <!-- connexion / première connexion -->
+  <div data-ecran="accueil" class="panel login" hidden>
+    <div class="filters" role="group" aria-label="Choix">
+      <button type="button" class="chip" data-onglet="connexion" aria-pressed="true">Se connecter</button>
+      <button type="button" class="chip" data-onglet="creation" aria-pressed="false">Première connexion</button>
+    </div>
+
+    <p id="m-accueil" class="note red" hidden role="alert" style="margin-bottom:16px"></p>
+
+    <form id="f-connexion" class="form" novalidate>
+      <div class="field"><label for="c-mail">Courriel</label><input id="c-mail" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="c-mdp">Mot de passe</label><input id="c-mdp" type="password" autocomplete="current-password" required></div>
+      <button class="btn" type="submit">Se connecter</button>
+      <button class="linkbtn" type="button" id="b-oubli" style="align-self:flex-start">Mot de passe oublié ?</button>
+    </form>
+
+    <form id="f-creation" class="form" novalidate hidden>
+      <p class="hint" style="font-size:14.5px;color:var(--muted)">Utilisez l'adresse de courriel que vous avez communiquée au secrétariat, puis choisissez votre mot de passe.</p>
+      <div class="field"><label for="n-mail">Courriel</label><input id="n-mail" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="n-mdp">Choisissez un mot de passe</label><input id="n-mdp" type="password" autocomplete="new-password" minlength="8" required><span class="hint">8 caractères au minimum.</span></div>
+      <div class="field"><label for="n-mdp2">Confirmez le mot de passe</label><input id="n-mdp2" type="password" autocomplete="new-password" minlength="8" required></div>
+      <button class="btn" type="submit">Créer mon accès</button>
+    </form>
+  </div>
+
+  <!-- mot de passe oublié -->
+  <div data-ecran="oubli" class="panel login" hidden>
+    <h2 style="font-size:22px;margin-bottom:10px">Mot de passe oublié</h2>
+    <p style="margin-bottom:16px">Indiquez votre courriel : vous recevrez un lien pour choisir un nouveau mot de passe.</p>
+    <p id="m-oubli" class="note" hidden role="status" style="margin-bottom:16px"></p>
+    <form id="f-oubli" class="form" novalidate>
+      <div class="field"><label for="o-mail">Courriel</label><input id="o-mail" type="email" autocomplete="email" required></div>
+      <button class="btn" type="submit">Recevoir le lien</button>
+      <button class="linkbtn" type="button" id="b-oubli-retour" style="align-self:flex-start">← Retour à la connexion</button>
+    </form>
+  </div>
+
+  <!-- confirmation du courriel -->
+  <div data-ecran="verification" class="panel login" hidden>
+    <h2 style="font-size:22px;margin-bottom:10px">Confirmez votre adresse</h2>
+    <p>Un courriel vient d'être envoyé à <strong id="v-mail"></strong>. Ouvrez-le et cliquez sur le lien de confirmation, puis revenez sur cette page.</p>
+    <p class="hint" style="font-size:14px;color:var(--muted);margin-top:10px">Vous ne le trouvez pas ? Regardez dans le dossier des indésirables.</p>
+    <p id="m-verif" class="note" hidden role="status" style="margin-top:16px"></p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+      <button class="btn" type="button" id="b-verifie">J'ai confirmé mon adresse</button>
+      <button class="btn ghost" type="button" id="b-renvoi">Renvoyer le courriel</button>
+    </div>
+    <button class="linkbtn" type="button" data-deconnexion style="margin-top:12px">Se déconnecter</button>
+  </div>
+
+  <!-- adresse retirée de la liste -->
+  <div data-ecran="refuse" class="panel login" hidden>
+    <h2 style="font-size:22px;margin-bottom:10px">Accès non autorisé</h2>
+    <p>Votre adresse ne figure pas, ou plus, dans la liste des adhérents à jour de cotisation. Si vous pensez qu'il s'agit d'une erreur, écrivez au secrétariat.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+      <a class="btn" href="contact.html">Nous écrire</a>
+      <button class="btn ghost" type="button" data-deconnexion>Se déconnecter</button>
+    </div>
+  </div>
+
+  <!-- espace adhérent -->
+  <div data-ecran="espace" hidden>
+    <div class="section-title" style="justify-content:space-between;flex-wrap:wrap">
+      <h2>Bonjour, <span id="e-nom"></span></h2>
+      <button class="linkbtn" type="button" data-deconnexion>Se déconnecter</button>
+    </div>
+    <h3 style="font-size:19px;margin-bottom:12px">Documents de l'amicale</h3>
+    <div class="doclist" style="margin-bottom:28px">
+      <div class="doc"><div class="ic">PDF</div><div><div class="t">Règlement intérieur</div><div class="m">Version du 21 janvier 2023 · 7 pages</div></div><span class="tag warn">Adhérents</span><span style="display:flex;gap:8px"><a class="btn ghost sm" href="reglement-interieur.html">Lire</a><a class="btn ghost sm" href="documents/reglement-interieur-2023.pdf" target="_blank" rel="noopener">PDF</a></span></div>
+      <div class="doc"><div class="ic">PDF</div><div><div class="t">Convocation à l'assemblée générale 2026</div><div class="m">Collioure, 15 et 16 octobre · pouvoir, bulletin de participation, hôtels, programme</div></div><span class="tag warn">Adhérents</span><a class="btn ghost sm" href="documents/convocation-ag-2026.pdf" target="_blank" rel="noopener">PDF</a></div>
+      <div class="doc"><div class="ic">PDF</div><div><div class="t">Pont-de-Claix — 83<sup>e</sup> anniversaire des libérations</div><div class="m">Compte rendu de la délégation Rhône-Alpes · 22 août 2026</div></div><span class="tag warn">Adhérents</span><a class="btn ghost sm" href="documents/pont-de-claix-22-aout-2026.pdf" target="_blank" rel="noopener">PDF</a></div>
+    </div>
+    <h3 style="font-size:19px;margin-bottom:12px">Bulletins, procès-verbaux et documents du bureau</h3>
+    <div id="e-docs" class="doclist"></div>
+    <p class="note" style="margin-top:22px">Ces documents sont réservés aux adhérents. Merci de ne pas les transmettre en dehors de l'amicale.</p>
+  </div>
+
+</main>
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photo agrandie">
+  <button class="close" id="lb-close" type="button" aria-label="Fermer">×</button>
+  <div class="frame"><img id="lb-img" alt=""></div>
+  <p class="cap" id="lb-cap"></p>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <img class="logo" src="assets/img/01-insigne-de-l-amicale-des-anciens-du-1er-bataillo.png" alt="" width="46" height="42">
+          <strong style="font-family:var(--font-display);line-height:1.2">Amicale des anciens du 1<sup>er</sup> Bataillon de choc et du C.N.E.C.</strong>
+        </div>
+        <p>Association loi 1901 — AABC-CNEC/1CHOC, BP 10355, 66003 Perpignan Cedex.<br>Solidarité, mémoire, transmission.</p>
+        <p class="mono" style="margin-top:14px;color:var(--accent)">En pointe toujours</p>
+      </div>
+      <div>
+        <h4>L'association</h4>
+        <a href="association.html">Présentation</a>
+        <a href="association.html#bureau">Le bureau</a>
+        <a href="association.html#delegations">Délégations régionales</a>
+        <a href="histoire.html">Histoire</a>
+      </div>
+      <div>
+        <h4>Participer</h4>
+        <a href="actualites.html">Actualités</a>
+        <a href="galerie.html">Galerie</a>
+        <a href="boutique.html">Boutique</a>
+        <a href="adhesion.html">Adhésion</a>
+      </div>
+      <div>
+        <h4>Nous écrire</h4>
+        <a href="contact.html">Contact</a>
+        <a href="membres.html">Espace membres</a>
+        <a href="documents.html">Documents</a>
+        <a href="mailto:aabc.cnec.1er.rgt.de.choc@gmail.com">Par courriel</a>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 A.A.B.C. — C.N.E.C. / 1<sup>er</sup> Régiment de choc. Association indépendante du ministère des Armées.</span>
+      <span><a href="mentions-legales.html">Mentions légales</a></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+<script type="module" src="assets/js/membres.js"></script>
+</body>
+</html>

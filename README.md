@@ -136,6 +136,60 @@ qui en charge dix met une éternité à s'ouvrir sur un téléphone).
       du fort Miradou, qui porte le filigrane « CNEC 1choc ».
 - [x] Bureau et délégués : seuls les noms et prénoms sont publiés (adresses, courriels
       et téléphones retirés).
-- [ ] Corriger deux coquilles relevées dans le bulletin : **Servance-Miellin** est en
-      Haute-Saône (code postal 70440, et non 07440), et le délégué Nord/Nord-Est est
-      écrit *AMSELM* alors que son adresse est `didier.anselm@`.
+- [x] Nom du délégué Nord/Nord-Est corrigé : **ANSELM Didier**.
+
+---
+
+## 7. Espace membres (Firebase)
+
+L'espace membres (`membres.html`) et son administration (`admin.html`) reposent sur
+**Firebase**, le service gratuit de Google. GitHub ne sert que les pages ; les comptes, la
+liste des adhérents et les liens des documents réservés sont chez Firebase.
+
+### Mise en service (une seule fois)
+
+1. Sur **console.firebase.google.com**, connecté avec le Gmail de l'amicale :
+   **Créer un projet** → nom `amicale-cnec` → désactivez Google Analytics → **Créer**.
+2. **Authentication → Commencer → Adresse e-mail/Mot de passe → Activer** (première
+   ligne seulement) → **Enregistrer**.
+3. **Authentication → Paramètres → Domaines autorisés → Ajouter un domaine** :
+   `anciens-cnec.github.io` (et plus tard votre nom de domaine).
+4. **Authentication → Modèles** : vérifiez que la langue des courriels est le **français**
+   (icône crayon → Langue du modèle).
+5. **Firestore Database → Créer une base de données** → emplacement `eur3 (europe-west)`
+   → **mode production** → **Créer**.
+6. **Firestore Database → Règles** : effacez tout, collez le contenu du fichier
+   `firebase/firestore.rules`, puis **Publier**.
+7. **Paramètres du projet** (roue dentée) → **Vos applications** → icône **</>** (Web) →
+   surnom `site` → **Enregistrer l'application**. Recopiez `apiKey`, `authDomain`,
+   `projectId` et `appId` dans `assets/js/firebase-config.js`, puis déposez ce fichier sur
+   GitHub.
+
+### Devenir administrateur
+
+1. Dans la console, **Firestore → Démarrer une collection** : identifiant `adherents`,
+   premier document : votre courriel en minuscules comme identifiant, champ `nom`
+   (texte) = votre prénom.
+2. Créez de même la collection `admins`, avec un document dont l'identifiant est votre
+   courriel en minuscules (champ `nom`, texte).
+3. Sur le site, **Espace membres → Première connexion** : choisissez votre mot de passe,
+   puis confirmez votre adresse avec le lien reçu par courriel.
+4. Ouvrez `admin.html` et connectez-vous : vous pouvez maintenant coller la colonne des
+   courriels des 264 adhérents en une seule fois.
+
+### Au quotidien
+
+- **Appel de cotisation** : ajoutez les nouveaux, retirez ceux qui ne sont plus à jour.
+- **Nouveau document réservé** : déposez le PDF dans un dossier Google Drive de
+  l'amicale, **Partager → Tous les utilisateurs disposant du lien**, copiez le lien, puis
+  ajoutez-le dans `admin.html`.
+- **Mot de passe oublié** : l'adhérent se débrouille seul avec le lien de la page.
+
+### Ce qu'il faut savoir
+
+- Les fichiers du dossier `documents/` du dépôt GitHub restent **publics** : un document
+  vraiment confidentiel ne doit jamais y être déposé, seulement sur Google Drive.
+- Un lien Google Drive « tous les utilisateurs disposant du lien » n'est visible qu'après
+  connexion, mais un adhérent peut le transmettre. Pour une protection complète, il faudra
+  passer au stockage Firebase, qui exige d'enregistrer une carte bancaire (offre Blaze,
+  gratuite à ce volume).
