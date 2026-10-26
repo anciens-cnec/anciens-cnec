@@ -57,11 +57,31 @@
       lbCap = document.getElementById("lb-cap"),
       lastFocus = null;
 
+  var serie = [], rang = -1;
+  function legende(img) {
+    var cap = img.dataset.caption;
+    if (!cap) {
+      var fig = img.closest("figure");
+      var fc = fig && fig.querySelector("figcaption");
+      cap = fc ? fc.textContent.trim() : img.alt;
+    }
+    return cap;
+  }
   function openLightbox(src, alt, caption) {
     lbImg.src = src; lbImg.alt = alt || "";
-    lbCap.textContent = caption || ""; lbCap.hidden = !caption;
+    var compte = serie.length > 1 ? "  ·  " + (rang + 1) + " / " + serie.length : "";
+    lbCap.textContent = (caption || "") + compte; lbCap.hidden = !(caption || compte);
+    var p = document.getElementById("lb-prev"), n = document.getElementById("lb-next");
+    if (p) p.hidden = serie.length < 2;
+    if (n) n.hidden = serie.length < 2;
     lb.hidden = false;
     document.getElementById("lb-close").focus();
+  }
+  function aller(pas) {
+    if (serie.length < 2) return;
+    rang = (rang + pas + serie.length) % serie.length;
+    var img = serie[rang];
+    openLightbox(img.currentSrc || img.src, img.alt, legende(img));
   }
   function closeLightbox() {
     lb.hidden = true; lbImg.src = "";
@@ -70,6 +90,8 @@
   if (lb) {
     document.addEventListener("click", function (e) {
       if (e.target.closest("#lightbox")) {
+        if (e.target.closest("#lb-prev")) return aller(-1);
+        if (e.target.closest("#lb-next")) return aller(1);
         if (e.target.closest("#lb-close") || !e.target.closest(".frame")) closeLightbox();
         return;
       }
@@ -78,16 +100,17 @@
       lastFocus = document.activeElement;
       var img = trigger.tagName === "IMG" ? trigger : trigger.querySelector("img");
       if (!img) return;
-      var cap = trigger.dataset.caption;
-      if (!cap) {
-        var fig = trigger.closest("figure");
-        var fc = fig && fig.querySelector("figcaption");
-        cap = fc ? fc.textContent.trim() : img.alt;
-      }
+      var cap = trigger.dataset.caption || legende(img);
+      var album = img.closest(".album");
+      serie = album ? Array.prototype.slice.call(document.querySelectorAll(".album img")) : [];
+      rang = serie.indexOf(img);
       openLightbox(img.currentSrc || img.src, img.alt, cap);
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !lb.hidden) closeLightbox();
+      if (lb.hidden) return;
+      if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowLeft") aller(-1);
+      else if (e.key === "ArrowRight") aller(1);
     });
   }
 })();
