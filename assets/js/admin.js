@@ -35,18 +35,34 @@ function demarrer() {
   /* ajout d'adhérents par copier-coller */
   $("f-ajout").addEventListener("submit", async e => {
     e.preventDefault();
-    const brut = $("ajout-liste").value.split(/[\s;,]+/).map(cle).filter(Boolean);
-    const valides = [...new Set(brut.filter(x => RE_MAIL.test(x)))];
-    const rejetes = brut.filter(x => !RE_MAIL.test(x));
+    /* Chaque ligne collée depuis le tableur : le courriel, et éventuellement le prénom et le nom
+       dans les colonnes voisines (séparées par des tabulations). */
+    const fiches = new Map(), rejetes = [];
+    $("ajout-liste").value.split(/\r?\n/).forEach(ligne => {
+      if (!ligne.trim()) return;
+      const cellules = ligne.includes("\t") ? ligne.split("\t") : ligne.split(/[\s;,]+/);
+      const mails = cellules.map(cle).filter(c => RE_MAIL.test(c));
+      if (!mails.length) { if (!/courriel|e-?mail|mail/i.test(ligne)) rejetes.push(ligne.trim().slice(0, 40)); return; }
+      if (ligne.includes("\t")) {
+        const nom = cellules.map(c => c.trim()).filter(c => c && !RE_MAIL.test(c.toLowerCase())).join(" ").replace(/\s+/g, " ").slice(0, 80);
+        fiches.set(mails[0], nom);
+      } else mails.forEach(m => fiches.set(m, fiches.get(m) || ""));
+    });
+    const valides = [...fiches.keys()];
     if (!valides.length) return msg("m-ajout", "Aucune adresse valide trouvée.", "erreur");
     try {
       for (let i = 0; i < valides.length; i += 400) {
         const lot = writeBatch(db);
-        valides.slice(i, i + 400).forEach(m => lot.set(doc(db, "adherents", m), { ajoute: serverTimestamp() }, { merge: true }));
+        valides.slice(i, i + 400).forEach(m => {
+          const v = { ajoute: serverTimestamp() };
+          if (fiches.get(m)) v.nom = fiches.get(m);
+          lot.set(doc(db, "adherents", m), v, { merge: true });
+        });
         await lot.commit();
       }
       $("ajout-liste").value = "";
-      msg("m-ajout", valides.length + " adresse(s) enregistrée(s)." + (rejetes.length ? " Ignorées car invalides : " + rejetes.join(", ") : ""));
+      const avecNom = valides.filter(m => fiches.get(m)).length;
+      msg("m-ajout", valides.length + " adhérent(s) enregistré(s), dont " + avecNom + " avec leur nom." + (rejetes.length ? " Lignes ignorées, sans courriel valide : " + rejetes.join(" ; ") : ""));
       chargerAdherents();
     } catch (err) { msg("m-ajout", messageErreur(err), "erreur"); }
   });
