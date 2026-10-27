@@ -89,15 +89,15 @@
     <div class="split" style="align-items:start">
       <form id="f-ajout" class="form">
         <div class="field">
-          <label for="ajout-liste">Ajouter des adresses</label>
-          <textarea id="ajout-liste" rows="8" placeholder="Collez ici la colonne des courriels depuis votre tableur, une adresse par ligne."></textarea>
-          <span class="hint">Les doublons et les adresses déjà présentes sont sans effet.</span>
+          <label for="ajout-liste">Ajouter des adhérents</label>
+          <textarea id="ajout-liste" rows="8" placeholder="Collez ici vos colonnes depuis le tableur : le nom et le courriel, ou le courriel seul. Une ligne par adhérent."></textarea>
+          <span class="hint">Sélectionnez les deux colonnes dans votre tableur et collez-les telles quelles : le nom et l'adresse peuvent être dans n'importe quel ordre. Les doublons sont ignorés, et recoller une adresse seule n'efface pas le nom déjà enregistré.</span>
         </div>
         <button class="btn" type="submit">Enregistrer</button>
         <p id="m-ajout" class="note" hidden role="status"></p>
       </form>
       <div>
-        <div class="field" style="margin-bottom:12px"><label for="filtre">Rechercher une adresse</label><input id="filtre" type="search"></div>
+        <div class="field" style="margin-bottom:12px"><label for="filtre">Rechercher un nom ou une adresse</label><input id="filtre" type="search"></div>
         <div class="tablewrap" style="max-height:420px;overflow:auto">
           <table><tbody id="t-adh"></tbody></table>
         </div>
