@@ -32,37 +32,27 @@ function demarrer() {
     chargerAdherents(); chargerDocuments();
   });
 
-  /* ajout d'adhérents par copier-coller */
+  /* ajout d'adhérents par copier-coller : adresse seule, ou nom et adresse */
   $("f-ajout").addEventListener("submit", async e => {
     e.preventDefault();
-    /* Chaque ligne collée depuis le tableur : le courriel, et éventuellement le prénom et le nom
-       dans les colonnes voisines (séparées par des tabulations). */
-    const fiches = new Map(), rejetes = [];
-    $("ajout-liste").value.split(/\r?\n/).forEach(ligne => {
-      if (!ligne.trim()) return;
-      const cellules = ligne.includes("\t") ? ligne.split("\t") : ligne.split(/[\s;,]+/);
-      const mails = cellules.map(cle).filter(c => RE_MAIL.test(c));
-      if (!mails.length) { if (!/courriel|e-?mail|mail/i.test(ligne)) rejetes.push(ligne.trim().slice(0, 40)); return; }
-      if (ligne.includes("\t")) {
-        const nom = cellules.map(c => c.trim()).filter(c => c && !RE_MAIL.test(c.toLowerCase())).join(" ").replace(/\s+/g, " ").slice(0, 80);
-        fiches.set(mails[0], nom);
-      } else mails.forEach(m => fiches.set(m, fiches.get(m) || ""));
-    });
-    const valides = [...fiches.keys()];
-    if (!valides.length) return msg("m-ajout", "Aucune adresse valide trouvée.", "erreur");
+    const { fiches, rejets } = analyser($("ajout-liste").value);
+    if (!fiches.length) return msg("m-ajout", "Aucune adresse valide trouvée.", "erreur");
     try {
-      for (let i = 0; i < valides.length; i += 400) {
+      for (let i = 0; i < fiches.length; i += 400) {
         const lot = writeBatch(db);
-        valides.slice(i, i + 400).forEach(m => {
-          const v = { ajoute: serverTimestamp() };
-          if (fiches.get(m)) v.nom = fiches.get(m);
-          lot.set(doc(db, "adherents", m), v, { merge: true });
+        fiches.slice(i, i + 400).forEach(f => {
+          /* un collage sans nom n'efface jamais un nom déjà enregistré */
+          const donnees = f.nom ? { nom: f.nom, ajoute: serverTimestamp() } : { ajoute: serverTimestamp() };
+          lot.set(doc(db, "adherents", f.mail), donnees, { merge: true });
         });
         await lot.commit();
       }
       $("ajout-liste").value = "";
-      const avecNom = valides.filter(m => fiches.get(m)).length;
-      msg("m-ajout", valides.length + " adhérent(s) enregistré(s), dont " + avecNom + " avec leur nom." + (rejetes.length ? " Lignes ignorées, sans courriel valide : " + rejetes.join(" ; ") : ""));
+      const avecNom = fiches.filter(f => f.nom).length;
+      msg("m-ajout",
+        fiches.length + " adresse(s) enregistrée(s)" +
+        (avecNom ? ", dont " + avecNom + " avec le nom" : "") + "." +
+        (rejets.length ? " Lignes ignorées : " + rejets.slice(0, 5).join(" / ") + (rejets.length > 5 ? " …" : "") : ""));
       chargerAdherents();
     } catch (err) { msg("m-ajout", messageErreur(err), "erreur"); }
   });
@@ -87,26 +77,82 @@ function demarrer() {
 
 let adherents = [];
 
+/* Découpe le collage. Chaque ligne peut contenir, dans n'importe quel ordre
+   et séparés par une tabulation, un point-virgule, une virgule ou des espaces :
+   une adresse de courriel, et éventuellement le nom de l'adhérent.
+   Deux colonnes copiées depuis un tableur arrivent séparées par une tabulation. */
+function analyser(texte) {
+  const fiches = [], rejets = [], vus = new Set();
+  for (const brute of String(texte || "").split(/\r?\n/)) {
+    const ligne = brute.trim();
+    if (!ligne) continue;
+    const mots = ligne.split(/[\t;,\s]+/).map(s => s.trim()).filter(Boolean);
+    const adresses = mots.filter(m => RE_MAIL.test(m));
+    if (!adresses.length) { rejets.push(ligne); continue; }
+    /* plusieurs adresses sur la même ligne : on ne sait pas à qui attribuer le nom */
+    const nom = adresses.length === 1 ? mots.filter(m => !RE_MAIL.test(m)).join(" ").trim() : "";
+    adresses.forEach(a => {
+      const mail = cle(a);
+      if (vus.has(mail)) return;
+      vus.add(mail);
+      fiches.push({ mail, nom });
+    });
+  }
+  return { fiches, rejets };
+}
+
+const sansAccent = s => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
 async function chargerAdherents() {
   const snap = await getDocs(collection(db, "adherents"));
-  adherents = snap.docs.map(d => d.id).sort();
+  adherents = snap.docs
+    .map(d => ({ mail: d.id, nom: ((d.data() || {}).nom || "").trim() }))
+    .sort((a, b) => (a.nom || a.mail).localeCompare(b.nom || b.mail, "fr", { sensitivity: "base" }));
   $("nb-adh").textContent = adherents.length;
   filtrer();
 }
 
 function filtrer() {
-  const f = cle($("filtre").value);
+  const f = sansAccent($("filtre").value);
   const corps = $("t-adh"); corps.textContent = "";
-  adherents.filter(m => !f || m.includes(f)).slice(0, 300).forEach(m => {
+  const trouves = adherents.filter(a => !f || sansAccent(a.nom + " " + a.mail).includes(f));
+  if (!trouves.length) {
     const tr = document.createElement("tr");
-    const td = document.createElement("td"); td.textContent = m;
-    const td2 = document.createElement("td"); td2.style.textAlign = "right";
-    const b = document.createElement("button"); b.className = "linkbtn danger"; b.type = "button"; b.textContent = "Retirer";
+    const td = document.createElement("td");
+    td.colSpan = 2; td.style.color = "var(--muted)";
+    td.textContent = adherents.length ? "Aucun adhérent ne correspond." : "Aucun adhérent enregistré.";
+    tr.appendChild(td); corps.appendChild(tr);
+    return;
+  }
+  trouves.slice(0, 400).forEach(a => {
+    const tr = document.createElement("tr");
+
+    const td = document.createElement("td");
+    if (a.nom) {
+      const n = document.createElement("div");
+      n.style.fontWeight = "600";
+      n.textContent = a.nom;
+      const m = document.createElement("div");
+      m.style.fontSize = "13px"; m.style.color = "var(--muted)";
+      m.textContent = a.mail;
+      td.append(n, m);
+    } else {
+      td.textContent = a.mail;
+    }
+
+    const td2 = document.createElement("td");
+    td2.style.textAlign = "right";
+    const b = document.createElement("button");
+    b.className = "linkbtn danger"; b.type = "button"; b.textContent = "Retirer";
     b.addEventListener("click", async () => {
-      if (!confirm("Retirer " + m + " de la liste des adhérents ?")) return;
-      await deleteDoc(doc(db, "adherents", m)); chargerAdherents();
+      if (!confirm("Retirer " + (a.nom ? a.nom + " (" + a.mail + ")" : a.mail) + " de la liste des adhérents ?")) return;
+      await deleteDoc(doc(db, "adherents", a.mail));
+      chargerAdherents();
     });
-    td2.appendChild(b); tr.append(td, td2); corps.appendChild(tr);
+    td2.appendChild(b);
+
+    tr.append(td, td2);
+    corps.appendChild(tr);
   });
 }
 
