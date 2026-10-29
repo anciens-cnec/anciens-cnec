@@ -445,3 +445,16 @@ nav.pill,.right{align-self:center}
 .news article[hidden],
 .gal figure[hidden],
 .album figure[hidden]{display:none}
+
+/* ===== oeil d'affichage des mots de passe ===== */
+.mdp-hote{position:relative;display:block}
+.mdp-hote input{width:100%;padding-right:48px}
+.voir-mdp{
+  position:absolute;right:7px;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;padding:0;border:0;border-radius:9px;
+  background:none;color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.voir-mdp:hover{color:var(--ink);background:var(--surface-2)}
+.voir-mdp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.voir-mdp svg{width:20px;height:20px;display:block}
