@@ -458,3 +458,11 @@ nav.pill,.right{align-self:center}
 .voir-mdp:hover{color:var(--ink);background:var(--surface-2)}
 .voir-mdp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .voir-mdp svg{width:20px;height:20px;display:block}
+
+/* ===== un bouton placé dans un bloc de texte reste un bouton =====
+   .prose a et .note a soulignent et colorent les liens ; sans ces lignes,
+   un .btn posé dans un de ces blocs perd son fond et se retrouve souligné. */
+.prose a.btn, .note a.btn{text-decoration:none;color:#fff}
+.prose a.btn:hover, .note a.btn:hover{color:#fff}
+.prose a.btn.ghost, .note a.btn.ghost,
+.prose a.btn.ghost:hover, .note a.btn.ghost:hover{color:var(--ink)}
