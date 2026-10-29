@@ -64,7 +64,7 @@
   <div class="pagehead">
     <span class="mono">Réservé aux délégués régionaux</span>
     <h1>Dépôt des délégations</h1>
-    <p class="lede">Déposez ici le compte rendu d'une cérémonie ou d'un rassemblement organisé dans votre région. Il paraîtra dans l'espace réservé aux adhérents.</p>
+    <p class="lede">Transmettez ici le compte rendu et les photographies d'une cérémonie ou d'un rassemblement organisé dans votre région.</p>
   </div>
 
   <div data-ecran="bientot" class="panel login" hidden><p>L'espace réservé n'est pas encore configuré.</p></div>
@@ -87,41 +87,24 @@
     </div>
 
     <div class="split" style="align-items:start">
-      <form id="f-depot" class="form">
-        <div class="field"><label for="p-titre">Titre</label>
-          <input id="p-titre" type="text" required placeholder="Cérémonie du 11 novembre à Grenoble"></div>
+      <div class="prose">
+        <h2>Comment transmettre une cérémonie</h2>
+        <p>Le bouton ci-dessous ouvre le formulaire de dépôt de l'amicale. Vous y indiquez votre délégation, la date et le lieu, quelques lignes de compte rendu, et vous déposez vos photographies — jusqu'à dix par envoi.</p>
+        <p><strong>N'allégez pas vos photos.</strong> Envoyez-les telles qu'elles sortent de l'appareil ou du téléphone. Elles seront préparées pour le site, et débarrassées des coordonnées de localisation que les téléphones y inscrivent.</p>
+        <p>Le responsable de la communication est prévenu dès votre envoi, et procède à la mise en ligne. Vous recevez par courriel une copie de ce que vous avez transmis.</p>
 
-        <div class="field"><label for="p-cat">Nature du document</label>
-          <select id="p-cat">
-            <option>Compte rendu de cérémonie</option>
-            <option>Compte rendu de rassemblement</option>
-            <option>Album photographique</option>
-            <option>Autre</option>
-          </select></div>
+        <a class="btn" href="https://forms.gle/D2PuAiTghgjPEnCB8" target="_blank" rel="noopener"
+           style="width:fit-content;margin-top:8px;font-size:17px;padding:14px 26px">Déposer une cérémonie</a>
 
-        <div class="field"><label for="p-delegation">Délégation</label>
-          <input id="p-delegation" type="text" required placeholder="Rhône-Alpes"></div>
+        <p style="font-size:14px;color:var(--muted);margin-top:14px">Le formulaire s'ouvre dans un nouvel onglet. Google vous demandera d'être connecté à un compte Google pour déposer des fichiers : c'est une exigence de Google, pas de l'amicale. Si vous n'en avez pas, écrivez au siège, nous ferons autrement.</p>
+      </div>
 
-        <div class="field"><label for="p-date">Date de la cérémonie</label>
-          <input id="p-date" type="date" required></div>
+      <div class="grid" style="gap:14px">
+        <div class="note"><strong>Plus de dix photographies ?</strong> Faites un second dépôt, ou envoyez le reste par courriel au siège. Mieux vaut vingt bonnes photos que deux cents prises au hasard.</div>
 
-        <div class="field"><label for="p-lien">Lien du document</label>
-          <input id="p-lien" type="url" required placeholder="https://drive.google.com/…">
-          <span class="hint">Déposez votre PDF dans votre Google Drive, choisissez « Partager », puis « Toute personne disposant du lien », et collez ici le lien obtenu.</span></div>
+        <div class="card"><span class="tag sea">Avant d'envoyer</span><h3>Trois vérifications</h3><p>Les noms et les grades sont-ils exacts ? Les dates ? Et parmi vos photographies, y en a-t-il une qui pourrait gêner la personne qu'elle montre ?</p></div>
 
-        <button class="btn" type="submit">Déposer</button>
-        <p id="m-depot" class="note" hidden role="status"></p>
-      </form>
-
-      <div>
-        <div class="note" style="margin-bottom:16px">
-          <strong>Les photographies, ne les déposez pas ici.</strong> Envoyez-les par courriel au responsable de la communication : elles doivent être allégées et débarrassées des coordonnées GPS que les téléphones y inscrivent avant de paraître sur le site.
-          <a class="btn ghost sm" style="width:fit-content;margin-top:12px" href="mailto:aabc.cnec.1er.rgt.de.choc@gmail.com?subject=Photographies%20de%20c%C3%A9r%C3%A9monie">Envoyer les photos</a>
-        </div>
-        <div class="section-title"><h2 style="font-size:19px">Vos dépôts</h2></div>
-        <div class="tablewrap">
-          <table><thead><tr><th>Titre</th><th>Date</th><th></th></tr></thead><tbody id="t-depots"></tbody></table>
-        </div>
+        <div class="card"><span class="tag">Une question</span><h3>Écrivez au siège</h3><p>Pour toute difficulté avec le formulaire ou le dépôt.</p><a class="btn ghost sm" href="contact.html" style="width:fit-content">Nous écrire</a></div>
       </div>
     </div>
   </div>
