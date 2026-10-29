@@ -113,4 +113,39 @@
       else if (e.key === "ArrowRight") aller(1);
     });
   }
+
+  /* ---- afficher ou masquer un mot de passe ----
+     Ajoute un oeil au bout de chaque champ de mot de passe de la page.
+     Vaut pour l'espace membres, l'administration et la page des delegues. */
+  var OEIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.5 5 12 5s10.2 7 10.2 7-3.7 7-10.2 7S1.8 12 1.8 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var OEIL_BARRE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.2A9.6 9.6 0 0 1 12 5c6.5 0 10.2 7 10.2 7a18 18 0 0 1-2.8 3.6M6.3 6.8A18 18 0 0 0 1.8 12S5.5 19 12 19a9.8 9.8 0 0 0 4-.8"/><path d="m9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
+
+  document.querySelectorAll('input[type="password"]').forEach(function (champ) {
+    if (champ.dataset.oeil) return;
+    champ.dataset.oeil = "1";
+
+    var enveloppe = document.createElement("span");
+    enveloppe.className = "mdp-hote";
+    champ.parentNode.insertBefore(enveloppe, champ);
+    enveloppe.appendChild(champ);
+
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "voir-mdp";
+    b.innerHTML = OEIL;
+    b.setAttribute("aria-label", "Afficher le mot de passe");
+    b.title = "Afficher le mot de passe";
+
+    b.addEventListener("click", function () {
+      var masque = champ.type === "password";
+      champ.type = masque ? "text" : "password";
+      b.innerHTML = masque ? OEIL_BARRE : OEIL;
+      var texte = masque ? "Masquer le mot de passe" : "Afficher le mot de passe";
+      b.setAttribute("aria-label", texte);
+      b.title = texte;
+      champ.focus();
+    });
+
+    enveloppe.appendChild(b);
+  });
 })();
