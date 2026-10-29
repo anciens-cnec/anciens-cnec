@@ -20,24 +20,43 @@ service cloud.firestore {
     function estAdmin() {
       return confirme() && exists(/databases/$(base)/documents/admins/$(moi()));
     }
+    function estDelegue() {
+      return confirme() && exists(/databases/$(base)/documents/delegues/$(moi()));
+    }
 
     // Liste des adhérents autorisés : identifiant = courriel en minuscules.
     // Chacun ne peut lire que sa propre fiche ; seuls les administrateurs voient et modifient la liste.
     match /adherents/{email} {
-      allow get: if connecte() && moi() == email;
+      allow get: if confirme() && moi() == email;
       allow read, write: if estAdmin();
     }
 
     // Administrateurs : créés à la main dans la console, jamais depuis le site.
     match /admins/{email} {
-      allow get: if connecte() && moi() == email;
+      allow get: if confirme() && moi() == email;
       allow write: if false;
     }
 
-    // Documents réservés : lisibles par les adhérents, gérés par les administrateurs.
+    // Délégués régionaux : créés à la main dans la console.
+    // Chacun ne peut lire que sa propre fiche, et personne ne peut la modifier depuis le site.
+    match /delegues/{email} {
+      allow get: if confirme() && moi() == email;
+      allow list: if estAdmin();
+      allow write: if false;
+    }
+
+    // Documents réservés.
+    //  · lecture  : adhérents, délégués et administrateurs ;
+    //  · dépôt    : administrateurs, et délégués à condition de signer leur dépôt ;
+    //  · retrait  : administrateurs, et délégué pour ses propres dépôts uniquement ;
+    //  · modification : administrateurs seulement.
     match /documents/{id} {
-      allow read: if estAdherent() || estAdmin();
-      allow write: if estAdmin();
+      allow read  : if estAdherent() || estAdmin() || estDelegue();
+      allow create: if estAdmin()
+                    || (estDelegue() && request.resource.data.auteur == moi());
+      allow update: if estAdmin();
+      allow delete: if estAdmin()
+                    || (estDelegue() && resource.data.auteur == moi());
     }
   }
 }
