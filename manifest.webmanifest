@@ -1,0 +1,16 @@
+{
+  "name": "Amicale des anciens du 1er Bataillon de choc et du C.N.E.C.",
+  "short_name": "Anciens Choc",
+  "description": "Site de l'amicale des anciens du 1er Bataillon de choc et du C.N.E.C. — 1er Régiment de choc.",
+  "lang": "fr",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    { "src": "assets/img/icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/img/icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/img/icone-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
