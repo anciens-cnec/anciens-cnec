@@ -5,7 +5,7 @@ import {
   sendPasswordResetEmail, onAuthStateChanged, signOut, reload
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  doc, getDoc, collection, getDocs, query, orderBy
+  doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
@@ -125,6 +125,7 @@ async function entrer(user) {
   }
   if (!fiche.exists()) { ecran("refuse"); return; }
   const d = fiche.data() || {};
+  noterPassage(cle(user.email), d);
   $("e-nom").textContent = d.nom ? d.nom : user.email;
   try {
     await chargerDocuments();
@@ -137,6 +138,22 @@ async function entrer(user) {
     $("e-docs").appendChild(p);
   }
   ecran("espace");
+}
+
+/* Marque le passage de l'adhérent dans sa propre fiche : une date de première
+   visite et une date de dernière visite, sans aucun historique des passages.
+   Le compte est tenu pour le bureau, sur la page Administration.
+   L'écriture n'est jamais bloquante : si elle échoue, l'adhérent entre quand même. */
+const DELAI_NOUVEAU_PASSAGE = 30 * 60 * 1000;
+
+function noterPassage(email, d) {
+  const precedent = d.derniereConnexion && typeof d.derniereConnexion.toMillis === "function"
+    ? d.derniereConnexion.toMillis() : 0;
+  if (Date.now() - precedent < DELAI_NOUVEAU_PASSAGE) return;
+  const champs = { derniereConnexion: serverTimestamp() };
+  if (!d.premiereConnexion) champs.premiereConnexion = serverTimestamp();
+  setDoc(doc(db, "adherents", email), champs, { merge: true })
+    .catch(err => console.warn("Passage non enregistré :", (err && err.code) || err));
 }
 
 function afficherErreur(err) {

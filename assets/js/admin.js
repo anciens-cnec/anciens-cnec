@@ -103,13 +103,42 @@ function analyser(texte) {
 
 const sansAccent = s => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+const TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
+
+/* Les fiches portent, depuis l'espace membres, la date de la première et de la
+   dernière visite. Rien n'est conservé d'autre : ni historique, ni compteur de passages. */
+const millis = v => (v && typeof v.toMillis === "function") ? v.toMillis() : 0;
+
+const enFrancais = ms => new Date(ms).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+
 async function chargerAdherents() {
   const snap = await getDocs(collection(db, "adherents"));
   adherents = snap.docs
-    .map(d => ({ mail: d.id, nom: ((d.data() || {}).nom || "").trim() }))
+    .map(d => {
+      const v = d.data() || {};
+      return { mail: d.id, nom: (v.nom || "").trim(), derniere: millis(v.derniereConnexion) };
+    })
     .sort((a, b) => (a.nom || a.mail).localeCompare(b.nom || b.mail, "fr", { sensitivity: "base" }));
   $("nb-adh").textContent = adherents.length;
+  afficherStatistiques();
   filtrer();
+}
+
+function afficherStatistiques() {
+  const el = $("stat-connexions");
+  if (!el) return;
+  if (!adherents.length) { el.textContent = ""; return; }
+  const limite = Date.now() - TRENTE_JOURS;
+  const venus = adherents.filter(a => a.derniere).length;
+  const recents = adherents.filter(a => a.derniere >= limite).length;
+  const jamais = adherents.length - venus;
+  if (!venus) { el.textContent = "Aucun adhérent ne s'est encore connecté."; return; }
+  const parts = [
+    venus + (venus > 1 ? " se sont connectés" : " s'est connecté") + " au moins une fois",
+    recents + " dans les 30 derniers jours"
+  ];
+  if (jamais) parts.push(jamais + (jamais > 1 ? " ne sont jamais venus" : " n'est jamais venu"));
+  el.textContent = parts.join("  ·  ");
 }
 
 function filtrer() {
@@ -139,6 +168,11 @@ function filtrer() {
     } else {
       td.textContent = a.mail;
     }
+    const c = document.createElement("div");
+    c.style.fontSize = "13px";
+    c.style.color = a.derniere ? "var(--muted)" : "var(--accent)";
+    c.textContent = a.derniere ? "Dernière connexion : " + enFrancais(a.derniere) : "Jamais connecté";
+    td.appendChild(c);
 
     const td2 = document.createElement("td");
     td2.style.textAlign = "right";

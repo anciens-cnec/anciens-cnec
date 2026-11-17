@@ -29,6 +29,13 @@ service cloud.firestore {
     match /adherents/{email} {
       allow get: if confirme() && moi() == email;
       allow read, write: if estAdmin();
+      // Chaque adhérent inscrit lui-même la date de sa visite dans sa propre fiche.
+      // Il ne peut toucher à rien d'autre : ni son nom, ni la fiche d'un camarade,
+      // et la date écrite est obligatoirement celle du serveur, pas une date choisie.
+      allow update: if confirme() && moi() == email
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['premiereConnexion', 'derniereConnexion'])
+                    && request.resource.data.derniereConnexion == request.time;
     }
 
     // Administrateurs : créés à la main dans la console, jamais depuis le site.
